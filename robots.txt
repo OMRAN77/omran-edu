@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://omran-edu.vercel.app/sitemap.xml

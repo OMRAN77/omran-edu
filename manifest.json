@@ -1,0 +1,19 @@
+{
+  "name": "عمران التعليمي - Omran Edu",
+  "short_name": "عمران Edu",
+  "description": "أداة ذكاء اصطناعي تولّد فيديوهات دروس تعليمية طويلة للمدارس والجامعات - by عمران",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#05070f",
+  "theme_color": "#2a5bd7",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

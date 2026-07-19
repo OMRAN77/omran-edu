@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>التعليم - Education</title>
+<meta name="description" content="أداة ذكاء اصطناعي تولّد فيديوهات دروس تعليمية طويلة للمدارس والجامعات - by عمران" />
+<meta name="theme-color" content="#2a5bd7" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/favicon-32.png" />
+<style>
+  :root{
+    --bg:#05070f; --panel:#0d1220; --panel2:#121a2e; --border:#22304d;
+    --text:#e8edf7; --muted:#8ea0c2; --accent:#2a5bd7; --accent2:#5b8cff;
+    --good:#22c55e; --warn:#f59e0b; --bad:#ef4444;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:radial-gradient(1200px 600px at 20% -10%, #10204a55, transparent),
+               radial-gradient(1000px 500px at 100% 0%, #2a5bd733, transparent),
+               var(--bg);
+    color:var(--text);
+    font-family:'Segoe UI', Tahoma, Arial, sans-serif;
+    min-height:100vh;
+    display:flex; flex-direction:column;
+  }
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 18px; border-bottom:1px solid var(--border);
+    background:#0a0e1acc; backdrop-filter:blur(8px);
+    position:sticky; top:0; z-index:10;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:800; font-size:18px;}
+  .brand .logo{
+    width:34px; height:34px; border-radius:10px;
+    background:linear-gradient(135deg, var(--accent), #7c3aed);
+    display:flex; align-items:center; justify-content:center; font-size:18px;
+  }
+  .langToggle{
+    display:flex; gap:6px; flex-wrap:wrap; background:var(--panel2); border:1px solid var(--border);
+    border-radius:10px; padding:4px;
+  }
+  .langToggle button{
+    border:none; background:transparent; color:var(--muted); padding:6px 10px;
+    border-radius:8px; cursor:pointer; font-weight:700; font-size:12px;
+  }
+  .langToggle button.active{ background:var(--accent); color:#fff; }
+
+  main{ flex:1; max-width:900px; width:100%; margin:0 auto; padding:24px 16px 60px; }
+
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:16px;
+    padding:22px; margin-bottom:20px;
+  }
+  .card h2{ margin:0 0 14px; font-size:18px; display:flex; align-items:center; gap:8px; }
+  label{ display:block; font-size:13px; color:var(--muted); margin:14px 0 6px; }
+  input[type=text], textarea, select{
+    width:100%; background:var(--panel2); border:1px solid var(--border);
+    border-radius:10px; color:var(--text); padding:10px 12px; font-size:14px;
+    font-family:inherit;
+  }
+  textarea{ resize:vertical; min-height:70px; }
+  .row{ display:flex; gap:12px; flex-wrap:wrap; }
+  .row > div{ flex:1; min-width:140px; }
+
+  button.primary{
+    background:linear-gradient(135deg, var(--accent), #4c7bf0);
+    color:#fff; border:none; padding:12px 20px; border-radius:12px;
+    font-weight:800; font-size:15px; cursor:pointer; margin-top:18px;
+    width:100%;
+  }
+  button.primary:disabled{ opacity:.5; cursor:not-allowed; }
+  button.secondary{
+    background:var(--panel2); color:var(--text); border:1px solid var(--border);
+    padding:9px 16px; border-radius:10px; font-weight:700; cursor:pointer; font-size:13px;
+  }
+  button.iconBtn{
+    background:transparent; border:1px solid var(--border); color:var(--muted);
+    border-radius:8px; padding:5px 9px; cursor:pointer; font-size:13px;
+  }
+
+  #status{ margin-top:12px; font-size:13px; color:var(--muted); min-height:18px; white-space:pre-line;}
+  .progressWrap{ height:8px; background:var(--panel2); border-radius:6px; overflow:hidden; margin-top:10px; display:none;}
+  .progressBar{ height:100%; width:0%; background:linear-gradient(90deg,var(--accent),#7c3aed); transition:width .3s;}
+
+  .slide{
+    border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:12px;
+    background:var(--panel2);
+  }
+  .slide .slideHead{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
+  .slide .slideHead span{ font-weight:700; color:var(--accent2); font-size:13px;}
+  .bulletsEdit textarea{ min-height:60px; }
+
+  #resultVideo{ width:100%; border-radius:12px; margin-top:14px; display:none; background:#000; }
+  #downloadLink{
+    display:none; text-align:center; margin-top:10px; padding:10px; border-radius:10px;
+    background:var(--good); color:#04210f; font-weight:800; text-decoration:none;
+  }
+
+  .hidden{ display:none !important; }
+  .badge{
+    display:inline-block; background:var(--panel2); border:1px solid var(--border);
+    border-radius:20px; padding:2px 10px; font-size:12px; color:var(--muted);
+  }
+  footer{ text-align:center; color:var(--muted); font-size:12px; padding:20px; }
+  a{ color:var(--accent2); }
+
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-thumb{ background:#2a3654; border-radius:6px; }
+
+  .mini-mic-field-row{ display:flex; align-items:flex-start; gap:6px; }
+  .mini-mic-field-row > input, .mini-mic-field-row > textarea{ flex:1; }
+  .mini-mic-btn{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:8px; border:1px solid var(--border); background:var(--panel2); color:var(--text); cursor:pointer; font-size:15px; flex-shrink:0; margin-top:0; }
+  .mini-mic-btn.recording{ background:#ff4d4d; color:#fff; }
+  .mini-mic-btn.transcribing{ background:var(--accent); color:#fff; opacity:0.75; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><div class="logo">🎓</div><span id="brandTitle">التعليم</span></div>
+  <div class="langToggle">
+    <button id="btnAr" class="active">AR</button>
+    <button id="btnEn">ENG</button>
+    <button id="btnFr">FRA</button>
+    <button id="btnHi">HIN</button>
+    <button id="btnUr">URD</button>
+    <button id="btnBn">BEN</button>
+    <button id="btnNe">NEP</button>
+  </div>
+</header>
+
+<main>
+
+  <div class="card" id="setupCard">
+    <h2 id="setupTitle">📝 أنشئ درسك</h2>
+    <label id="lblTopic">موضوع الدرس</label>
+    <div class="mini-mic-field-row">
+    <input type="text" id="topic" placeholder="مثال: الدورة الدموية في جسم الإنسان" />
+    <button type="button" class="mini-mic-btn" data-target="topic" title="🎤">🎤</button>
+    </div>
+
+    <div class="row">
+      <div>
+        <label id="lblDuration">مدة الفيديو التقريبية</label>
+        <select id="duration">
+          <option value="5">5 دقائق</option>
+          <option value="10" selected>10 دقائق</option>
+          <option value="15">15 دقيقة</option>
+          <option value="20">20 دقيقة</option>
+          <option value="30">30 دقيقة</option>
+          <option value="40">40 دقيقة</option>
+        </select>
+      </div>
+      <div>
+        <label id="lblLevel">المستوى</label>
+        <select id="level">
+          <option value="school" selected>مدرسي</option>
+          <option value="university">جامعي</option>
+        </select>
+      </div>
+      <div>
+        <label id="lblVoice">صوت الراوي</label>
+        <select id="voice">
+          <option value="onyx" selected>ذكر (Onyx)</option>
+          <option value="nova">أنثى (Nova)</option>
+          <option value="alloy">محايد (Alloy)</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="primary" id="btnGenerateScript">✨ إنشاء سكربت الدرس</button>
+    <div id="status1"></div>
+  </div>
+
+  <div class="card hidden" id="editorCard">
+    <h2 id="editorTitle">📑 راجع وعدّل الشرائح</h2>
+    <div id="slidesContainer"></div>
+    <button class="primary" id="btnGenerateVideo">🎬 إنشاء الفيديو</button>
+    <div class="progressWrap" id="progressWrap"><div class="progressBar" id="progressBar"></div></div>
+    <div id="status2"></div>
+    <video id="resultVideo" controls></video>
+    <a id="downloadLink" download="lesson.mp4">⬇️ تحميل الفيديو</a>
+  </div>
+
+</main>
+
+<footer id="footerText">عمران التعليمي — بدعم من الذكاء الاصطناعي</footer>
+
+<script>
+(function(){
+  const $ = (s) => document.querySelector(s);
+  let lang = localStorage.getItem('omranedu_lang') || 'ar';
+
+  const STR = {
+    ar: {
+      brand:'التعليم', setupTitle:'📝 أنشئ درسك', lblTopic:'موضوع الدرس',
+      topicPh:'مثال: الدورة الدموية في جسم الإنسان', lblDuration:'مدة الفيديو التقريبية',
+      lblLevel:'المستوى', school:'مدرسي', university:'جامعي', lblVoice:'صوت الراوي',
+      btnGenScript:'✨ إنشاء سكربت الدرس', editorTitle:'📑 راجع وعدّل الشرائح',
+      btnGenVideo:'🎬 إنشاء الفيديو', download:'⬇️ تحميل الفيديو',
+      footer:'عمران التعليمي — بدعم من الذكاء الاصطناعي',
+      genScriptWorking:'✨ جاري إنشاء سكربت الدرس بالذكاء الاصطناعي...', genScriptErr:'❌ خطأ: ',
+      needTopic:'⚠️ اكتب موضوع الدرس أولًا.',
+      slideHeading:'عنوان الشريحة', slideBullets:'النقاط (كل نقطة بسطر)', slideNarration:'نص السرد الصوتي',
+      slideLabel:'شريحة',
+      genSlideImg:'🖼️ جاري تجهيز شريحة ', genSlideAudio:'🔊 جاري توليد الصوت لشريحة ',
+      buildingClip:'🎞️ جاري بناء مقطع الشريحة ', joining:'🔗 جاري دمج كل الشرائح بفيديو واحد...',
+      done:'✅ تم إنشاء الفيديو بنجاح!', videoErr:'❌ خطأ أثناء إنشاء الفيديو: ',
+      loadingFFmpeg:'⚙️ جاري تحميل أدوات معالجة الفيديو (أول مرة فقط، قد تستغرق دقيقة)...',
+      min5:'5 دقائق', min10:'10 دقائق', min15:'15 دقيقة', min20:'20 دقيقة', min30:'30 دقيقة', min40:'40 دقيقة',
+      voiceMale:'ذكر (Onyx)', voiceFemale:'أنثى (Nova)', voiceNeutral:'محايد (Alloy)',
+    },
+    en: {
+      brand:'Education', setupTitle:'📝 Create your lesson', lblTopic:'Lesson topic',
+      topicPh:'e.g. The human circulatory system', lblDuration:'Approximate video length',
+      lblLevel:'Level', school:'School', university:'University', lblVoice:'Narrator voice',
+      btnGenScript:'✨ Generate lesson script', editorTitle:'📑 Review & edit slides',
+      btnGenVideo:'🎬 Create the video', download:'⬇️ Download video',
+      footer:'Omran Edu — powered by AI',
+      genScriptWorking:'✨ Generating the lesson script with AI...', genScriptErr:'❌ Error: ',
+      needTopic:'⚠️ Please enter a lesson topic first.',
+      slideHeading:'Slide heading', slideBullets:'Bullet points (one per line)', slideNarration:'Narration text',
+      slideLabel:'Slide',
+      genSlideImg:'🖼️ Preparing slide ', genSlideAudio:'🔊 Generating audio for slide ',
+      buildingClip:'🎞️ Building clip for slide ', joining:'🔗 Joining all slides into one video...',
+      done:'✅ Video created successfully!', videoErr:'❌ Error creating video: ',
+      loadingFFmpeg:'⚙️ Loading video processing tools (first time only, may take a minute)...',
+      min5:'5 minutes', min10:'10 minutes', min15:'15 minutes', min20:'20 minutes', min30:'30 minutes', min40:'40 minutes',
+      voiceMale:'Male (Onyx)', voiceFemale:'Female (Nova)', voiceNeutral:'Neutral (Alloy)',
+    },
+    fr: {
+      brand:'Éducation', setupTitle:'📝 Créez votre leçon', lblTopic:'Sujet de la leçon',
+      topicPh:'ex. : La circulation sanguine chez l\'humain', lblDuration:'Durée approximative de la vidéo',
+      lblLevel:'Niveau', school:'Scolaire', university:'Universitaire', lblVoice:'Voix du narrateur',
+      btnGenScript:'✨ Générer le script de la leçon', editorTitle:'📑 Revoir et modifier les diapositives',
+      btnGenVideo:'🎬 Créer la vidéo', download:'⬇️ Télécharger la vidéo',
+      footer:'Omran Éducation — propulsé par l\'IA',
+      genScriptWorking:'✨ Génération du script de la leçon par IA...', genScriptErr:'❌ Erreur : ',
+      needTopic:'⚠️ Veuillez entrer un sujet de leçon d\'abord.',
+      slideHeading:'Titre de la diapositive', slideBullets:'Points clés (un par ligne)', slideNarration:'Texte de narration',
+      slideLabel:'Diapositive',
+      genSlideImg:'🖼️ Préparation de la diapositive ', genSlideAudio:'🔊 Génération de l\'audio pour la diapositive ',
+      buildingClip:'🎞️ Construction du clip pour la diapositive ', joining:'🔗 Fusion de toutes les diapositives en une seule vidéo...',
+      done:'✅ Vidéo créée avec succès !', videoErr:'❌ Erreur lors de la création de la vidéo : ',
+      loadingFFmpeg:'⚙️ Chargement des outils de traitement vidéo (première fois seulement, peut prendre une minute)...',
+      min5:'5 minutes', min10:'10 minutes', min15:'15 minutes', min20:'20 minutes', min30:'30 minutes', min40:'40 minutes',
+      voiceMale:'Homme (Onyx)', voiceFemale:'Femme (Nova)', voiceNeutral:'Neutre (Alloy)',
+    },
+    hi: {
+      brand:'शिक्षा', setupTitle:'📝 अपना पाठ बनाएँ', lblTopic:'पाठ का विषय',
+      topicPh:'उदा.: मानव शरीर में रक्त परिसंचरण', lblDuration:'वीडियो की अनुमानित अवधि',
+      lblLevel:'स्तर', school:'स्कूल', university:'विश्वविद्यालय', lblVoice:'कथावाचक की आवाज़',
+      btnGenScript:'✨ पाठ स्क्रिप्ट बनाएँ', editorTitle:'📑 स्लाइड्स की समीक्षा और संपादन करें',
+      btnGenVideo:'🎬 वीडियो बनाएँ', download:'⬇️ वीडियो डाउनलोड करें',
+      footer:'उमरान शिक्षा — एआई द्वारा संचालित',
+      genScriptWorking:'✨ एआई द्वारा पाठ स्क्रिप्ट बनाई जा रही है...', genScriptErr:'❌ त्रुटि: ',
+      needTopic:'⚠️ कृपया पहले पाठ का विषय लिखें।',
+      slideHeading:'स्लाइड शीर्षक', slideBullets:'मुख्य बिंदु (हर पंक्ति में एक)', slideNarration:'वर्णन पाठ',
+      slideLabel:'स्लाइड',
+      genSlideImg:'🖼️ स्लाइड तैयार की जा रही है ', genSlideAudio:'🔊 स्लाइड के लिए ऑडियो बनाया जा रहा है ',
+      buildingClip:'🎞️ स्लाइड के लिए क्लिप बनाई जा रही है ', joining:'🔗 सभी स्लाइड्स को एक वीडियो में जोड़ा जा रहा है...',
+      done:'✅ वीडियो सफलतापूर्वक बन गया!', videoErr:'❌ वीडियो बनाते समय त्रुटि: ',
+      loadingFFmpeg:'⚙️ वीडियो प्रोसेसिंग टूल लोड हो रहे हैं (केवल पहली बार, एक मिनट लग सकता है)...',
+      min5:'5 मिनट', min10:'10 मिनट', min15:'15 मिनट', min20:'20 मिनट', min30:'30 मिनट', min40:'40 मिनट',
+      voiceMale:'पुरुष (Onyx)', voiceFemale:'महिला (Nova)', voiceNeutral:'तटस्थ (Alloy)',
+    },
+    ur: {
+      brand:'تعلیم', setupTitle:'📝 اپنا سبق بنائیں', lblTopic:'سبق کا موضوع',
+      topicPh:'مثال: انسانی جسم میں خون کی گردش', lblDuration:'ویڈیو کا تخمینی دورانیہ',
+      lblLevel:'سطح', school:'اسکول', university:'یونیورسٹی', lblVoice:'راوی کی آواز',
+      btnGenScript:'✨ سبق کا اسکرپٹ بنائیں', editorTitle:'📑 سلائیڈز کا جائزہ اور ترمیم کریں',
+      btnGenVideo:'🎬 ویڈیو بنائیں', download:'⬇️ ویڈیو ڈاؤن لوڈ کریں',
+      footer:'عمران تعلیم — مصنوعی ذہانت کی مدد سے',
+      genScriptWorking:'✨ مصنوعی ذہانت سبق کا اسکرپٹ بنا رہی ہے...', genScriptErr:'❌ خرابی: ',
+      needTopic:'⚠️ پہلے سبق کا موضوع لکھیں۔',
+      slideHeading:'سلائیڈ کا عنوان', slideBullets:'اہم نکات (ہر لائن میں ایک)', slideNarration:'راوی کا متن',
+      slideLabel:'سلائیڈ',
+      genSlideImg:'🖼️ سلائیڈ تیار کی جا رہی ہے ', genSlideAudio:'🔊 سلائیڈ کے لیے آڈیو بنائی جا رہی ہے ',
+      buildingClip:'🎞️ سلائیڈ کے لیے کلپ بنایا جا رہا ہے ', joining:'🔗 تمام سلائیڈز کو ایک ویڈیو میں ملایا جا رہا ہے...',
+      done:'✅ ویڈیو کامیابی سے بن گئی!', videoErr:'❌ ویڈیو بناتے وقت خرابی: ',
+      loadingFFmpeg:'⚙️ ویڈیو پروسیسنگ ٹولز لوڈ ہو رہے ہیں (صرف پہلی بار، ایک منٹ لگ سکتا ہے)...',
+      min5:'5 منٹ', min10:'10 منٹ', min15:'15 منٹ', min20:'20 منٹ', min30:'30 منٹ', min40:'40 منٹ',
+      voiceMale:'مرد (Onyx)', voiceFemale:'عورت (Nova)', voiceNeutral:'غیر جانبدار (Alloy)',
+    },
+    bn: {
+      brand:'শিক্ষা', setupTitle:'📝 আপনার পাঠ তৈরি করুন', lblTopic:'পাঠের বিষয়',
+      topicPh:'যেমন মানুষের সংবহনতন্ত্র', lblDuration:'আনুমানিক ভিডিও দৈর্ঘ্য', lblLevel:'স্তর',
+      school:'স্কুল', university:'বিশ্ববিদ্যালয়', lblVoice:'কথক কন্ঠ',
+      btnGenScript:'✨ পাঠের স্ক্রিপ্ট তৈরি করুন', editorTitle:'📑 পর্যালোচনা করুন এবং স্লাইড সম্পাদনা করুন৷', btnGenVideo:'🎬 ভিডিওটি তৈরি করুন',
+      download:'⬇️ ভিডিও ডাউনলোড করুন', footer:'ওমরান শিক্ষা — AI দ্বারা চালিত', genScriptWorking:'✨ AI দিয়ে পাঠের স্ক্রিপ্ট তৈরি করা হচ্ছে...',
+      genScriptErr:'❌ ত্রুটি: ', needTopic:'⚠️ অনুগ্রহ করে প্রথমে একটি পাঠের বিষয় লিখুন।', slideHeading:'স্লাইড শিরোনাম',
+      slideBullets:'বুলেট পয়েন্ট (প্রতি লাইনে একটি)', slideNarration:'বর্ণনা পাঠ্য', slideLabel:'স্লাইড',
+      genSlideImg:'🖼️ স্লাইড প্রস্তুত করা হচ্ছে ', genSlideAudio:'🔊 স্লাইডের জন্য অডিও তৈরি করা হচ্ছে ', buildingClip:'🎞️ স্লাইডের জন্য বিল্ডিং ক্লিপ ',
+      joining:'🔗 সমস্ত স্লাইডকে একটি ভিডিওতে যুক্ত করা হচ্ছে...', done:'✅ ভিডিও সফলভাবে তৈরি করা হয়েছে!', videoErr:'❌ ভিডিও তৈরিতে ত্রুটি: ',
+      loadingFFmpeg:'⚙️ ভিডিও প্রসেসিং টুল লোড হচ্ছে (প্রথমবার শুধুমাত্র, এক মিনিট সময় লাগতে পারে)...', min5:'5 মিনিট', min10:'10 মিনিট',
+      min15:'15 মিনিট', min20:'20 মিনিট', min30:'30 মিনিট',
+      min40:'40 মিনিট', voiceMale:'পুরুষ (Onyx)', voiceFemale:'মহিলা (Nova)',
+      voiceNeutral:'নিরপেক্ষ (Alloy)',
+    },
+    ne: {
+      brand:'शिक्षा', setupTitle:'📝 आफ्नो पाठ सिर्जना गर्नुहोस्', lblTopic:'पाठ विषय',
+      topicPh:'जस्तै मानव परिसंचरण प्रणाली', lblDuration:'अनुमानित भिडियो लम्बाइ', lblLevel:'स्तर',
+      school:'विद्यालय', university:'विश्वविद्यालय', lblVoice:'कथाकार आवाज',
+      btnGenScript:'✨ पाठ लिपि उत्पन्न गर्नुहोस्', editorTitle:'📑 स्लाइडहरू समीक्षा र सम्पादन गर्नुहोस्', btnGenVideo:'🎬 भिडियो बनाउनुहोस्',
+      download:'⬇️ भिडियो डाउनलोड गर्नुहोस्', footer:'ओम्रान शिक्षा — AI द्वारा संचालित', genScriptWorking:'✨ AI सँग पाठ लिपि उत्पन्न गर्दै...',
+      genScriptErr:'❌ त्रुटि: ', needTopic:'⚠️ कृपया पहिले एउटा पाठ विषय प्रविष्ट गर्नुहोस्।', slideHeading:'स्लाइड शीर्षक',
+      slideBullets:'बुलेट बिन्दुहरू (प्रति लाइन एक)', slideNarration:'कथन पाठ', slideLabel:'स्लाइड',
+      genSlideImg:'🖼️ स्लाइड तयारी गर्दै ', genSlideAudio:'🔊 स्लाइडको लागि अडियो उत्पन्न गर्दै ', buildingClip:'🎞️ स्लाइडको लागि निर्माण क्लिप ',
+      joining:'🔗 सबै स्लाइडहरू एउटै भिडियोमा जोड्दै...', done:'✅ भिडियो सफलतापूर्वक सिर्जना गरियो!', videoErr:'❌ भिडियो सिर्जना गर्दा त्रुटि: ',
+      loadingFFmpeg:'⚙️ भिडियो प्रशोधन उपकरणहरू लोड गर्दै (पहिलो पटक मात्र, एक मिनेट लाग्न सक्छ)...', min5:'5 मिनेट', min10:'10 मिनेट',
+      min15:'15 मिनेट', min20:'20 मिनेट', min30:'30 मिनेट',
+      min40:'40 मिनेट', voiceMale:'पुरुष (Onyx)', voiceFemale:'महिला (Nova)',
+      voiceNeutral:'तटस्थ (Alloy)',
+    },
+  };
+
+  const RTL_LANGS = ['ar', 'ur'];
+  function isEn(){ return lang !== 'ar' && lang !== 'ur'; } // used for LTR canvas/text layout
+  function isRtl(){ return RTL_LANGS.indexOf(lang) !== -1; }
+  function T(k){ return (STR[lang] && STR[lang][k]) || STR.ar[k]; }
+
+  function applyLang(){
+    document.documentElement.lang = lang;
+    document.documentElement.dir = isRtl() ? 'rtl' : 'ltr';
+    $('#brandTitle').textContent = T('brand');
+    $('#setupTitle').textContent = T('setupTitle');
+    $('#lblTopic').textContent = T('lblTopic');
+    $('#topic').placeholder = T('topicPh');
+    $('#lblDuration').textContent = T('lblDuration');
+    $('#lblLevel').textContent = T('lblLevel');
+    $('#level').options[0].text = T('school');
+    $('#level').options[1].text = T('university');
+    const durOpts = $('#duration').options;
+    if (durOpts[0]) durOpts[0].text = T('min5');
+    if (durOpts[1]) durOpts[1].text = T('min10');
+    if (durOpts[2]) durOpts[2].text = T('min15');
+    if (durOpts[3]) durOpts[3].text = T('min20');
+    if (durOpts[4]) durOpts[4].text = T('min30');
+    if (durOpts[5]) durOpts[5].text = T('min40');
+    const voiceOpts = $('#voice').options;
+    if (voiceOpts[0]) voiceOpts[0].text = T('voiceMale');
+    if (voiceOpts[1]) voiceOpts[1].text = T('voiceFemale');
+    if (voiceOpts[2]) voiceOpts[2].text = T('voiceNeutral');
+    $('#lblVoice').textContent = T('lblVoice');
+    $('#btnGenerateScript').textContent = T('btnGenScript');
+    $('#editorTitle').textContent = T('editorTitle');
+    $('#btnGenerateVideo').textContent = T('btnGenVideo');
+    $('#downloadLink').textContent = T('download');
+    $('#footerText').textContent = T('footer');
+    ['ar','en','fr','hi','ur','bn','ne'].forEach(code => {
+      const btn = $('#btn' + code.charAt(0).toUpperCase() + code.slice(1));
+      if (btn) btn.classList.toggle('active', lang === code);
+    });
+    renderSlides();
+  }
+
+  ['ar','en','fr','hi','ur','bn','ne'].forEach(code => {
+    const btn = $('#btn' + code.charAt(0).toUpperCase() + code.slice(1));
+    if (btn) btn.onclick = () => { lang = code; localStorage.setItem('omranedu_lang', code); applyLang(); };
+  });
+
+  let lessonData = null; // { title, slides: [{heading, bullets, narration}] }
+
+  function setStatus1(msg){ $('#status1').textContent = msg || ''; }
+  function setStatus2(msg){ $('#status2').textContent = msg || ''; }
+
+  function renderSlides(){
+    const container = $('#slidesContainer');
+    container.innerHTML = '';
+    if(!lessonData) return;
+    lessonData.slides.forEach((s, i) => {
+      const div = document.createElement('div');
+      div.className = 'slide';
+      div.innerHTML =
+        '<div class="slideHead"><span>' + T('slideLabel') + ' ' + (i+1) + '</span></div>' +
+        '<label>' + T('slideHeading') + '</label>' +
+        '<div class="mini-mic-field-row">' +
+        '<input type="text" class="s-heading" id="s-heading-' + i + '" value="' + escapeAttr(s.heading || '') + '" />' +
+        '<button type="button" class="mini-mic-btn" data-target="s-heading-' + i + '" title="🎤">🎤</button>' +
+        '</div>' +
+        '<label>' + T('slideBullets') + '</label>' +
+        '<div class="mini-mic-field-row">' +
+        '<textarea class="s-bullets" id="s-bullets-' + i + '">' + escapeHtml((s.bullets||[]).join('\n')) + '</textarea>' +
+        '<button type="button" class="mini-mic-btn" data-target="s-bullets-' + i + '" title="🎤">🎤</button>' +
+        '</div>' +
+        '<label>' + T('slideNarration') + '</label>' +
+        '<div class="mini-mic-field-row">' +
+        '<textarea class="s-narration" id="s-narration-' + i + '">' + escapeHtml(s.narration || '') + '</textarea>' +
+        '<button type="button" class="mini-mic-btn" data-target="s-narration-' + i + '" title="🎤">🎤</button>' +
+        '</div>';
+      container.appendChild(div);
+    });
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function escapeAttr(str){
+    return escapeHtml(str).replace(/"/g,'&quot;');
+  }
+
+  function syncSlidesFromDOM(){
+    const nodes = document.querySelectorAll('#slidesContainer .slide');
+    nodes.forEach((n, i) => {
+      lessonData.slides[i].heading = n.querySelector('.s-heading').value;
+      lessonData.slides[i].bullets = n.querySelector('.s-bullets').value.split('\n').map(x=>x.trim()).filter(Boolean);
+      lessonData.slides[i].narration = n.querySelector('.s-narration').value;
+    });
+  }
+
+  $('#btnGenerateScript').onclick = async () => {
+    const topic = ($('#topic').value || '').trim();
+    if(!topic){ setStatus1(T('needTopic')); return; }
+    const duration = $('#duration').value;
+    const level = $('#level').value;
+    $('#btnGenerateScript').disabled = true;
+    setStatus1(T('genScriptWorking'));
+    try{
+      const res = await fetch('/api/lesson-script', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ topic, durationMinutes: duration, lang, level })
+      });
+      const data = await res.json();
+      if(!res.ok || data.error) throw new Error(data.error || 'unknown');
+      lessonData = data;
+      renderSlides();
+      $('#editorCard').classList.remove('hidden');
+      $('#editorCard').scrollIntoView({behavior:'smooth'});
+      setStatus1('');
+    } catch(e){
+      setStatus1(T('genScriptErr') + (e.message || e));
+    } finally {
+      $('#btnGenerateScript').disabled = false;
+    }
+  };
+
+  // ---------- Video building (client-side, via ffmpeg.wasm) ----------
+  let ffmpegInstance = null;
+  function withTimeout(promise, ms, label){
+    return Promise.race([
+      promise,
+      new Promise((_, rej) => setTimeout(() => rej(new Error('TIMEOUT:' + label)), ms)),
+    ]);
+  }
+
+  async function getFFmpeg(){
+    if (ffmpegInstance) return ffmpegInstance;
+    setStatus2(T('loadingFFmpeg'));
+    // Self-hosted (same-origin) ffmpeg.wasm assets — avoids cross-origin Worker
+    // restrictions that cause ffmpeg.load() to hang forever when loaded from a CDN.
+    const cdns = [
+      {
+        ffmpegPkg: '/ffmpeg-assets/ffmpeg/esm/index.js',
+        utilPkg: '/ffmpeg-assets/util/esm/index.js',
+        core: '/ffmpeg-assets/core/esm',
+        pkgBase: '/ffmpeg-assets/ffmpeg/esm',
+      },
+    ];
+    let lastErr = null;
+    for (let i = 0; i < cdns.length; i++){
+      const c = cdns[i];
+      try {
+        const loadPromise = (async () => {
+          const { FFmpeg } = await import(/* @vite-ignore */ c.ffmpegPkg);
+          const { toBlobURL } = await import(/* @vite-ignore */ c.utilPkg);
+          const ffmpeg = new FFmpeg();
+          await ffmpeg.load({
+            coreURL: await toBlobURL(c.core + '/ffmpeg-core.js', 'text/javascript'),
+            wasmURL: await toBlobURL(c.core + '/ffmpeg-core.wasm', 'application/wasm'),
+          });
+          return ffmpeg;
+        })();
+        ffmpegInstance = await withTimeout(loadPromise, 45000, 'ffmpeg-load');
+        return ffmpegInstance;
+      } catch (e) {
+        lastErr = e;
+        console.warn('FFmpeg load failed on CDN #' + i, e);
+      }
+    }
+    throw new Error((lastErr && lastErr.message) || 'FFmpeg load failed');
+  }
+
+  function wrapText(ctx, text, maxWidth){
+    const words = String(text||'').split(/\s+/).filter(Boolean);
+    const lines = [];
+    let cur = '';
+    for(const w of words){
+      const test = cur ? cur + ' ' + w : w;
+      if(ctx.measureText(test).width > maxWidth && cur){
+        lines.push(cur);
+        cur = w;
+      } else {
+        cur = test;
+      }
+    }
+    if(cur) lines.push(cur);
+    return lines;
+  }
+
+  function drawSlide(canvas, slide, index, total, title){
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0,0,W,H);
+    const grad = ctx.createLinearGradient(0,0,W,H);
+    grad.addColorStop(0, '#0a1128');
+    grad.addColorStop(1, '#132352');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,W,H);
+
+    // top accent bar
+    ctx.fillStyle = '#2a5bd7';
+    ctx.fillRect(0,0,W,10);
+
+    ctx.direction = isEn() ? 'ltr' : 'rtl';
+    ctx.textAlign = isEn() ? 'left' : 'right';
+    const rightX = isEn() ? 70 : W - 70;
+    const maxWidth = W - 140;
+
+    // slide heading
+    ctx.fillStyle = '#e8edf7';
+    ctx.font = 'bold 54px Segoe UI, Tahoma, Arial';
+    const headingLines = wrapText(ctx, slide.heading || '', maxWidth);
+    let y = 150;
+    headingLines.forEach(line => { ctx.fillText(line, rightX, y); y += 66; });
+
+    // divider
+    ctx.strokeStyle = '#2a5bd7';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(70, y + 10);
+    ctx.lineTo(W-70, y + 10);
+    ctx.stroke();
+    y += 60;
+
+    // bullets
+    ctx.font = '32px Segoe UI, Tahoma, Arial';
+    ctx.fillStyle = '#c7d3ec';
+    (slide.bullets || []).forEach(b => {
+      const bulletLines = wrapText(ctx, '• ' + b, maxWidth - 30);
+      bulletLines.forEach(line => {
+        if (y < H - 100){ ctx.fillText(line, rightX, y); y += 46; }
+      });
+      y += 14;
+    });
+
+    // footer: title + slide counter + brand
+    ctx.font = '22px Segoe UI, Tahoma, Arial';
+    ctx.fillStyle = '#5b8cff';
+    ctx.textAlign = isEn() ? 'left' : 'right';
+    ctx.fillText((title || '') , rightX, H - 40);
+    ctx.textAlign = isEn() ? 'right' : 'left';
+    const otherX = isEn() ? W - 70 : 70;
+    ctx.fillText((index+1) + ' / ' + total, otherX, H - 40);
+  }
+
+  function canvasToBlob(canvas){
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  }
+
+  async function fileToUint8(blob){
+    const buf = await blob.arrayBuffer();
+    return new Uint8Array(buf);
+  }
+
+  $('#btnGenerateVideo').onclick = async () => {
+    if(!lessonData) return;
+    syncSlidesFromDOM();
+    const btn = $('#btnGenerateVideo');
+    btn.disabled = true;
+    $('#progressWrap').style.display = 'block';
+    const progressBar = $('#progressBar');
+    progressBar.style.width = '0%';
+    $('#resultVideo').style.display = 'none';
+    $('#downloadLink').style.display = 'none';
+    const voice = $('#voice').value;
+
+    try{
+      const ffmpeg = await getFFmpeg();
+      const canvas = document.createElement('canvas');
+      canvas.width = 1280; canvas.height = 720;
+      const total = lessonData.slides.length;
+      const clipNames = [];
+
+      for(let i = 0; i < total; i++){
+        const slide = lessonData.slides[i];
+
+        setStatus2(T('genSlideImg') + (i+1) + '/' + total + '...');
+        drawSlide(canvas, slide, i, total, lessonData.title);
+        const imgBlob = await canvasToBlob(canvas);
+        const imgData = await fileToUint8(imgBlob);
+        await ffmpeg.writeFile('slide' + i + '.png', imgData);
+
+        setStatus2(T('genSlideAudio') + (i+1) + '/' + total + '...');
+        const ttsRes = await fetch('/api/tts', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ text: slide.narration || slide.heading || '', voice })
+        });
+        if(!ttsRes.ok){ throw new Error('TTS failed on slide ' + (i+1)); }
+        const audioBlob = await ttsRes.blob();
+        const audioData = await fileToUint8(audioBlob);
+        await ffmpeg.writeFile('audio' + i + '.mp3', audioData);
+
+        setStatus2(T('buildingClip') + (i+1) + '/' + total + '...');
+        const clipName = 'clip' + i + '.mp4';
+        await ffmpeg.exec([
+          '-loop', '1', '-i', 'slide' + i + '.png',
+          '-i', 'audio' + i + '.mp3',
+          '-c:v', 'libx264', '-tune', 'stillimage',
+          '-c:a', 'aac', '-b:a', '160k',
+          '-pix_fmt', 'yuv420p',
+          '-vf', 'scale=1280:720',
+          '-shortest', '-fflags', '+shortest', '-max_interleave_delta', '100M',
+          clipName
+        ]);
+        clipNames.push(clipName);
+
+        progressBar.style.width = Math.round(((i+1) / total) * 90) + '%';
+      }
+
+      setStatus2(T('joining'));
+      let listTxt = '';
+      clipNames.forEach(name => { listTxt += "file '" + name + "'\n"; });
+      await ffmpeg.writeFile('list.txt', new TextEncoder().encode(listTxt));
+      await ffmpeg.exec(['-f', 'concat', '-safe', '0', '-i', 'list.txt', '-c', 'copy', 'lesson_out.mp4']);
+      const data = await ffmpeg.readFile('lesson_out.mp4');
+      const finalBlob = new Blob([data.buffer], { type: 'video/mp4' });
+      const url = URL.createObjectURL(finalBlob);
+
+      progressBar.style.width = '100%';
+      setStatus2(T('done'));
+      $('#resultVideo').src = url;
+      $('#resultVideo').style.display = 'block';
+      $('#downloadLink').href = url;
+      $('#downloadLink').style.display = 'block';
+    } catch(e){
+      setStatus2(T('videoErr') + (e.message || e));
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  applyLang();
+
+  // ---- Reusable small 🎤 buttons attached to any free-text field (topic +
+  // per-slide heading/bullets/narration). Records via MediaRecorder and
+  // transcribes via the server-side /api/stt endpoint (OpenAI Whisper), then
+  // appends the transcript into the target field's value. Works on ALL
+  // devices (Android + iPhone + desktop). ----
+  function blobToBase64(blob){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(String(reader.result).split(',')[1] || '');
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+  const miniMicStates = {};
+  const MIC_ERR = { ar:'المتصفح لا يدعم إدخال الصوت. جرّب متصفح Chrome.', en:'This browser does not support voice input. Try Chrome.', fr:"Ce navigateur ne prend pas en charge la saisie vocale. Essayez Chrome.", hi:'यह ब्राउज़र वॉइस इनपुट का समर्थन नहीं करता। Chrome आज़माएं।', ur:'یہ براؤزر وائس ان پٹ کو سپورٹ نہیں کرتا۔ Chrome آزمائیں۔', bn:'এই ব্রাউজার ভয়েস ইনপুট সমর্থন করে না। Chrome ব্যবহার করুন।', ne:'यो ब्राउजरले आवाज इनपुट समर्थन गर्दैन। Chrome प्रयोग गर्नुहोस्।' };
+  function micErr(){ return MIC_ERR[lang] || MIC_ERR.ar; }
+
+  async function miniMicStart(btn, targetId){
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    let mimeType = '';
+    for(const cand of ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg']){
+      if(window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(cand)){ mimeType = cand; break; }
+    }
+    const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+    const chunks = [];
+    recorder.ondataavailable = (e) => { if(e.data && e.data.size > 0) chunks.push(e.data); };
+    recorder.start();
+    miniMicStates[targetId] = { stream, recorder, chunks, mimeType };
+    btn.classList.add('recording');
+  }
+
+  async function miniMicStop(btn, targetId){
+    const st = miniMicStates[targetId];
+    if(!st) return;
+    const finished = new Promise((resolve) => { st.recorder.onstop = resolve; });
+    st.recorder.stop();
+    await finished;
+    st.stream.getTracks().forEach(tr => tr.stop());
+    btn.classList.remove('recording');
+    btn.classList.add('transcribing');
+    try{
+      const blob = new Blob(st.chunks, { type: st.recorder.mimeType || st.mimeType || 'audio/webm' });
+      delete miniMicStates[targetId];
+      if(blob.size < 500){ btn.classList.remove('transcribing'); return; }
+      const audioBase64 = await blobToBase64(blob);
+      const res = await fetch('/api/stt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ audioBase64, mimeType: st.mimeType }),
+      });
+      const data = await res.json();
+      btn.classList.remove('transcribing');
+      if(!res.ok){ alert((data && data.error) ? data.error : micErr()); return; }
+      const transcript = (data && data.text ? data.text : '').trim();
+      if(!transcript) return;
+      const targetEl = document.getElementById(targetId);
+      if(targetEl){
+        targetEl.value = (targetEl.value ? targetEl.value + ' ' : '') + transcript;
+        targetEl.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    } catch(e){
+      btn.classList.remove('transcribing');
+      alert(micErr());
+    }
+  }
+
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.mini-mic-btn');
+    if(!btn) return;
+    const targetId = btn.getAttribute('data-target');
+    if(!targetId) return;
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder){
+      alert(micErr());
+      return;
+    }
+    if(btn.classList.contains('recording')){
+      miniMicStop(btn, targetId);
+    } else if(!btn.classList.contains('transcribing')){
+      try{ await miniMicStart(btn, targetId); } catch(err){ alert(micErr()); }
+    }
+  });
+})();
+</script>
+</body>
+</html>
