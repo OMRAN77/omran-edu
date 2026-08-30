@@ -121,15 +121,7 @@
 
 <header>
   <div class="brand"><div class="logo">🎓</div><span id="brandTitle">التعليم</span></div>
-  <div class="langToggle">
-    <button id="btnAr" class="active">AR</button>
-    <button id="btnEn">ENG</button>
-    <button id="btnFr">FRA</button>
-    <button id="btnHi">HIN</button>
-    <button id="btnUr">URD</button>
-    <button id="btnBn">BEN</button>
-    <button id="btnNe">NEP</button>
-  </div>
+  <!-- v-lang-dd (طلب عمران): أزرار اللغات السبعة كانت تكتظ فوق وتصادم العنوان — صارت قائمة «لغة الدرس» داخل النموذج -->
 </header>
 
 <main>
@@ -171,6 +163,17 @@
       </div>
     </div>
 
+    <label id="lblUiLang">لغة الدرس</label>
+    <select id="uiLang">
+      <option value="ar">العربية</option>
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="hi">हिन्दी</option>
+      <option value="ur">اردو</option>
+      <option value="bn">বাংলা</option>
+      <option value="ne">नेपाली</option>
+    </select>
+
     <button class="primary" id="btnGenerateScript">✨ إنشاء سكربت الدرس</button>
     <div id="status1"></div>
   </div>
@@ -198,7 +201,7 @@
     ar: {
       brand:'التعليم', setupTitle:'📝 أنشئ درسك', lblTopic:'موضوع الدرس',
       topicPh:'مثال: الدورة الدموية في جسم الإنسان', lblDuration:'مدة الفيديو التقريبية',
-      lblLevel:'المستوى', school:'مدرسي', university:'جامعي', lblVoice:'صوت الراوي',
+      lblLevel:'المستوى', school:'مدرسي', university:'جامعي', lblVoice:'صوت الراوي', lblUiLang:'لغة الدرس',
       btnGenScript:'✨ إنشاء سكربت الدرس', editorTitle:'📑 راجع وعدّل الشرائح',
       btnGenVideo:'🎬 إنشاء الفيديو', download:'⬇️ تحميل الفيديو',
       footer:'عمران التعليمي — بدعم من الذكاء الاصطناعي',
@@ -216,7 +219,7 @@
     en: {
       brand:'Education', setupTitle:'📝 Create your lesson', lblTopic:'Lesson topic',
       topicPh:'e.g. The human circulatory system', lblDuration:'Approximate video length',
-      lblLevel:'Level', school:'School', university:'University', lblVoice:'Narrator voice',
+      lblLevel:'Level', school:'School', university:'University', lblVoice:'Narrator voice', lblUiLang:'Lesson language',
       btnGenScript:'✨ Generate lesson script', editorTitle:'📑 Review & edit slides',
       btnGenVideo:'🎬 Create the video', download:'⬇️ Download video',
       footer:'Omran Edu — powered by AI',
@@ -234,7 +237,7 @@
     fr: {
       brand:'Éducation', setupTitle:'📝 Créez votre leçon', lblTopic:'Sujet de la leçon',
       topicPh:'ex. : La circulation sanguine chez l\'humain', lblDuration:'Durée approximative de la vidéo',
-      lblLevel:'Niveau', school:'Scolaire', university:'Universitaire', lblVoice:'Voix du narrateur',
+      lblLevel:'Niveau', school:'Scolaire', university:'Universitaire', lblVoice:'Voix du narrateur', lblUiLang:'Langue de la leçon',
       btnGenScript:'✨ Générer le script de la leçon', editorTitle:'📑 Revoir et modifier les diapositives',
       btnGenVideo:'🎬 Créer la vidéo', download:'⬇️ Télécharger la vidéo',
       footer:'Omran Éducation — propulsé par l\'IA',
@@ -252,7 +255,7 @@
     hi: {
       brand:'शिक्षा', setupTitle:'📝 अपना पाठ बनाएँ', lblTopic:'पाठ का विषय',
       topicPh:'उदा.: मानव शरीर में रक्त परिसंचरण', lblDuration:'वीडियो की अनुमानित अवधि',
-      lblLevel:'स्तर', school:'स्कूल', university:'विश्वविद्यालय', lblVoice:'कथावाचक की आवाज़',
+      lblLevel:'स्तर', school:'स्कूल', university:'विश्वविद्यालय', lblVoice:'कथावाचक की आवाज़', lblUiLang:'पाठ की भाषा',
       btnGenScript:'✨ पाठ स्क्रिप्ट बनाएँ', editorTitle:'📑 स्लाइड्स की समीक्षा और संपादन करें',
       btnGenVideo:'🎬 वीडियो बनाएँ', download:'⬇️ वीडियो डाउनलोड करें',
       footer:'उमरान शिक्षा — एआई द्वारा संचालित',
@@ -270,7 +273,7 @@
     ur: {
       brand:'تعلیم', setupTitle:'📝 اپنا سبق بنائیں', lblTopic:'سبق کا موضوع',
       topicPh:'مثال: انسانی جسم میں خون کی گردش', lblDuration:'ویڈیو کا تخمینی دورانیہ',
-      lblLevel:'سطح', school:'اسکول', university:'یونیورسٹی', lblVoice:'راوی کی آواز',
+      lblLevel:'سطح', school:'اسکول', university:'یونیورسٹی', lblVoice:'راوی کی آواز', lblUiLang:'سبق کی زبان',
       btnGenScript:'✨ سبق کا اسکرپٹ بنائیں', editorTitle:'📑 سلائیڈز کا جائزہ اور ترمیم کریں',
       btnGenVideo:'🎬 ویڈیو بنائیں', download:'⬇️ ویڈیو ڈاؤن لوڈ کریں',
       footer:'عمران تعلیم — مصنوعی ذہانت کی مدد سے',
@@ -288,7 +291,7 @@
     bn: {
       brand:'শিক্ষা', setupTitle:'📝 আপনার পাঠ তৈরি করুন', lblTopic:'পাঠের বিষয়',
       topicPh:'যেমন মানুষের সংবহনতন্ত্র', lblDuration:'আনুমানিক ভিডিও দৈর্ঘ্য', lblLevel:'স্তর',
-      school:'স্কুল', university:'বিশ্ববিদ্যালয়', lblVoice:'কথক কন্ঠ',
+      school:'স্কুল', university:'বিশ্ববিদ্যালয়', lblVoice:'কথক কন্ঠ', lblUiLang:'পাঠের ভাষা',
       btnGenScript:'✨ পাঠের স্ক্রিপ্ট তৈরি করুন', editorTitle:'📑 পর্যালোচনা করুন এবং স্লাইড সম্পাদনা করুন৷', btnGenVideo:'🎬 ভিডিওটি তৈরি করুন',
       download:'⬇️ ভিডিও ডাউনলোড করুন', footer:'ওমরান শিক্ষা — AI দ্বারা চালিত', genScriptWorking:'✨ AI দিয়ে পাঠের স্ক্রিপ্ট তৈরি করা হচ্ছে...',
       genScriptErr:'❌ ত্রুটি: ', needTopic:'⚠️ অনুগ্রহ করে প্রথমে একটি পাঠের বিষয় লিখুন।', slideHeading:'স্লাইড শিরোনাম',
@@ -303,7 +306,7 @@
     ne: {
       brand:'शिक्षा', setupTitle:'📝 आफ्नो पाठ सिर्जना गर्नुहोस्', lblTopic:'पाठ विषय',
       topicPh:'जस्तै मानव परिसंचरण प्रणाली', lblDuration:'अनुमानित भिडियो लम्बाइ', lblLevel:'स्तर',
-      school:'विद्यालय', university:'विश्वविद्यालय', lblVoice:'कथाकार आवाज',
+      school:'विद्यालय', university:'विश्वविद्यालय', lblVoice:'कथाकार आवाज', lblUiLang:'पाठको भाषा',
       btnGenScript:'✨ पाठ लिपि उत्पन्न गर्नुहोस्', editorTitle:'📑 स्लाइडहरू समीक्षा र सम्पादन गर्नुहोस्', btnGenVideo:'🎬 भिडियो बनाउनुहोस्',
       download:'⬇️ भिडियो डाउनलोड गर्नुहोस्', footer:'ओम्रान शिक्षा — AI द्वारा संचालित', genScriptWorking:'✨ AI सँग पाठ लिपि उत्पन्न गर्दै...',
       genScriptErr:'❌ त्रुटि: ', needTopic:'⚠️ कृपया पहिले एउटा पाठ विषय प्रविष्ट गर्नुहोस्।', slideHeading:'स्लाइड शीर्षक',
@@ -350,17 +353,18 @@
     $('#btnGenerateVideo').textContent = T('btnGenVideo');
     $('#downloadLink').textContent = T('download');
     $('#footerText').textContent = T('footer');
-    ['ar','en','fr','hi','ur','bn','ne'].forEach(code => {
-      const btn = $('#btn' + code.charAt(0).toUpperCase() + code.slice(1));
-      if (btn) btn.classList.toggle('active', lang === code);
-    });
+    const uiDd = $('#uiLang');
+    if (uiDd) uiDd.value = lang;
+    const uiLbl = $('#lblUiLang');
+    if (uiLbl) uiLbl.textContent = T('lblUiLang') || 'لغة الدرس';
     renderSlides();
   }
 
-  ['ar','en','fr','hi','ur','bn','ne'].forEach(code => {
-    const btn = $('#btn' + code.charAt(0).toUpperCase() + code.slice(1));
-    if (btn) btn.onclick = () => { lang = code; localStorage.setItem('omranedu_lang', code); applyLang(); };
-  });
+  /* v-lang-dd: المنسدلة بدل الأزرار — نفس الحفظ ونفس applyLang */
+  (function(){
+    const dd = $('#uiLang');
+    if (dd) dd.onchange = () => { lang = dd.value; localStorage.setItem('omranedu_lang', lang); applyLang(); };
+  })();
 
   let lessonData = null; // { title, slides: [{heading, bullets, narration}] }
 
